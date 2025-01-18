@@ -48,39 +48,6 @@ class LoginTokenObtainPairView(generics.GenericAPIView):
             if user is not None :
                 if user.is_active:
 
-                    # # check if user.is_2fa_enabled if yes send otp to user.email
-                    # if user.is_2fa_enabled:
-                    #     code = CodeConfirmation.generate_unique_code_six()
-
-                    #     existing_record = CodeConfirmation.objects.filter(
-                    #         user=user,
-                    #         confirmation_type='login',
-                    #         is_active=True
-                    #     ).first()
-
-                    #     if existing_record:
-                    #         existing_record.code = code
-                    #         existing_record.retry_count += 1
-                    #         existing_record.save()
-
-                    #     else:
-                    #         code_object = CodeConfirmation.objects.create(
-                    #             user=user,
-                    #             code=code,
-                    #             confirmation_type='login'
-                    #         )
-
-                    #     Email.send_2fa_access_code_notification(
-                    #         user.email,code=code,
-                    #         name=f'{user.first_name}'
-                    #     )
-                    #     return success_response(
-                    #         message="Verification code has been sent to you email",
-                    #         data={
-                    #             "otp":True
-                    #         }
-                    #     )
-
                     valid_user = User.objects.get(pk=user.id)
                     tokens = TokenManager.get_tokens_for_user(user)
                     response = {
@@ -167,6 +134,17 @@ class RegisterUserView(generics.GenericAPIView):
         last_name = serializer.validated_data['last_name']
         email = serializer.validated_data['email'].lower()
         password = serializer.validated_data['password']
+        confirmPassword = serializer.validated_data['confirmPassword']
+        phone_number = serializer.validated_data['password']
+        preferred_content = serializer.validated_data['preferred_content']
+        study_preference = serializer.validated_data['study_preference']
+        previous_year_performance = serializer.validated_data['previous_year_performance']
+        current_year_level = serializer.validated_data['current_year_level']
+
+        # validate that password and confirm password are the same
+        if password != confirmPassword:
+            return bad_request_response(message="Passwords do not match")
+        
 
         password_validation_error = self.validate_password(password)
         if password_validation_error:
@@ -182,19 +160,19 @@ class RegisterUserView(generics.GenericAPIView):
             last_name=last_name,
             email=email,
             is_active=True,
-            is_verify=True
+            phone_number=phone_number,
+            preferred_content=preferred_content,
+            study_preference=study_preference,
+            previous_year_performance=previous_year_performance,
+            current_year_level=current_year_level,
         )
         user.set_password(password)
         user.save()
         response_data = dict(
             tokens= TokenManager.get_tokens_for_user(user),
-            user=self.serializer_class(user).data
+            user=UserSerializer(user).data
         )
 
-        Email.send_account_creation_notification(
-            email,
-            user.first_name,
-        )
         return success_response(message='User registered successfully.',data=response_data,status_code=201)
 
 

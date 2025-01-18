@@ -53,7 +53,38 @@ class User(AbstractBaseUser, PermissionsMixin):
         null=True,
         blank=True
     )
-    # student_id = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)  # Unique student identifier
+    preferred_content = models.CharField(
+        max_length=20,
+        null=True,
+        blank=True,
+        choices=[
+            ('Video', 'Video'),
+            ('Article', 'Article'),
+            ('Quiz', 'Quiz'),
+        ]
+    )
+    study_preference = models.CharField(
+        max_length=20,
+        null=True,
+        blank=True,
+        choices=[
+            ('Morning', 'Morning'),
+            ('Night', 'Night'),
+        ]
+    )
+    current_year_level = models.CharField(
+        max_length=20,
+        null=True,
+        blank=True,
+        choices=[
+            ('1st Year', '1st Year'),
+            ('2nd Year', '2nd Year'),
+            ('3rd Year', '3rd Year'),
+            ('4th Year', '4th Year'),
+            ('5th Year', '5th Year'),
+
+        ]
+    )
     is_superuser = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
