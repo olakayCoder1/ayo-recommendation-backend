@@ -158,10 +158,10 @@ class GoogleDataHandler:
             return None
 
 
-links = asyncio.run(ArticleManager().search())
-print(links)
-# Running the asynchronous function
-for link in links[2:3]:
-    data = asyncio.run(GoogleDataHandler.scrape_article(link)) 
+# links = asyncio.run(ArticleManager().search())
+# print(links)
+# # Running the asynchronous function
+# for link in links[2:3]:
+#     data = asyncio.run(GoogleDataHandler.scrape_article(link)) 
 
     
