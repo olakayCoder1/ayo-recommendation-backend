@@ -17,6 +17,7 @@ feedfinder2==0.0.4
 feedparser==6.0.11
 filelock==3.17.0
 frozenlist==1.5.0
+gunicorn==23.0.0
 idna==3.10
 jieba3k==0.35.1
 joblib==1.4.2
@@ -25,6 +26,7 @@ lxml_html_clean==0.4.1
 multidict==6.1.0
 newspaper3k==0.2.8
 nltk==3.9.1
+packaging==24.2
 pillow==11.1.0
 propcache==0.3.0
 PyJWT==2.10.1
