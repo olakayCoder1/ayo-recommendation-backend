@@ -22,20 +22,16 @@ class UserProfileView(generics.GenericAPIView):
         is_changed = False
         first_name = request.data.get('first_name')
         last_name = request.data.get('last_name')
+        user.current_year_level = request.data.get('current_year_level')
+        user.study_preference = request.data.get('study_preference')
+        user.previous_year_performance = request.data.get('previous_year_performance')
+        user.current_year_level = request.data.get('current_year_level')
+        user.phone_number = request.data.get('phone_number')
+        user.preferred_content = request.data.get('preferred_content')
+        user.first_name = first_name
+        user.last_name = last_name
+        user.save()
 
-        if first_name:
-            user.first_name = first_name
-            is_changed = True
-        
-        if last_name:
-            user.last_name = last_name
-            is_changed = True
-
-        
-        if is_changed:
-            user.save()
-
-        
         return success_response(message="Profile updated",data=self.serializer_class(user).data)
 
 

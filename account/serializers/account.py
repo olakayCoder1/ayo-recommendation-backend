@@ -8,7 +8,7 @@ class AccountProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('id', 'email', 'first_name', 'last_name', 'is_admin', 'created_at', 'role')
+        fields = ('id', 'email', 'first_name', 'last_name', 'is_admin', 'created_at', 'role','preferred_content','study_preference','current_year_level','previous_year_performance','current_year_level','phone_number')
 
     def get_role(self, obj):
         # Check if the user is an admin, then assign the role as "admin", otherwise "user"

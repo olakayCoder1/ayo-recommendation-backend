@@ -7,7 +7,7 @@ from helper.utils.response.response_format import success_response, paginate_suc
 
 
 class QuizViewSet(viewsets.ModelViewSet):
-    queryset = Quiz.objects.all()
+    queryset = Quiz.objects.all().order_by("-created_at")
     serializer_class = QuizSerializer
     # permission_classes = [permissions.IsAuthenticated]
     
@@ -19,7 +19,7 @@ class QuizViewSet(viewsets.ModelViewSet):
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
-        return success_response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+        return success_response(serializer.data)
     
 
     def list(self, request, *args, **kwargs):
