@@ -23,9 +23,10 @@ class QuizViewSet(viewsets.ModelViewSet):
     
 
     def list(self, request, *args, **kwargs):
-        queryset = self.serializer_class(self.get_queryset(),many=True)
+        queryset = self.get_queryset()
+        serializer = self.get_serializer(queryset, many=True)
         return paginate_success_response(
             request,
-            queryset.data,
-            page_size=int(request.GET.get('page_size',20))
+            serializer.data,
+            page_size=int(request.GET.get("page_size",20))
         )
