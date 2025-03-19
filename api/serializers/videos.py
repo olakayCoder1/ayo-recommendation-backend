@@ -2,7 +2,7 @@
 from rest_framework import serializers
 
 from api.models.other import Category, Tag
-from api.models.videos import Video
+from api.models.videos import Like, Rating, Video
 
 class TagSerializer(serializers.ModelSerializer):
     class Meta:
@@ -65,16 +65,58 @@ class VideoSerializer(serializers.ModelSerializer):
     # )
     tags_ids = serializers.CharField(write_only=True)
     category_id = serializers.CharField(write_only=True)
+    average_rating = serializers.SerializerMethodField()
+    likes_count = serializers.SerializerMethodField()
+    has_rated = serializers.SerializerMethodField()
+    has_liked = serializers.SerializerMethodField()
     
     class Meta:
         model = Video
         fields = [
             'id', 'title', 'slug', 'description', 'category', 
             'tags', 'tags_ids', 'video_file', 'thumbnail', 
-            'created_at', 'views', 'category_id'
+            'created_at', 'views', 'category_id', 'average_rating', 'likes_count',
+            'has_rated', 'has_liked'
         ]
         read_only_fields = ['id', 'slug', 'created_at', 'views', 'category']
     
+
+    def get_average_rating(self, obj):
+        """
+        This method returns the average rating of a video.
+        If no ratings exist, it returns None.
+        """
+        return obj.get_average_rating()
+
+    def get_likes_count(self, obj):
+        """
+        This method returns the number of likes a video has.
+        """
+        return obj.get_likes_count()
+    
+
+
+    def get_has_rated(self, obj):
+        """
+        This method checks if the logged-in user has rated the video.
+        It returns True if the user has rated, otherwise False.
+        """
+        user = self.context.get('request').user
+        if user and user.is_authenticated:
+            return Rating.objects.filter(video=obj, user=user).exists()
+        return False
+
+    def get_has_liked(self, obj):
+        """
+        This method checks if the logged-in user has liked the video.
+        It returns True if the user has liked, otherwise False.
+        """
+        user = self.context.get('request').user
+        if user and user.is_authenticated:
+            return Like.objects.filter(video=obj, user=user).exists()
+        return False
+    
+
     def create(self, validated_data):
         tags_ids = validated_data.pop('tags_ids', '')
         print(tags_ids)

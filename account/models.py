@@ -112,6 +112,25 @@ class Article(models.Model):
     top_image = models.URLField(max_length=2000, blank=True, null=True)
     meta_description = models.TextField(blank=True)
     summary = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return self.title
+
+
+    def get_likes_count(self):
+        return self.articles.count()
+
+
+class ArticleLike(models.Model):
+    article = models.ForeignKey(Article, related_name='articles', on_delete=models.CASCADE)
+    user = models.ForeignKey(User, related_name='articles', on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = ('article', 'user') 
+
+    def __str__(self):
+        return f"{self.user.email} liked {self.video.title}"
+
+
+    

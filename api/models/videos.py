@@ -4,6 +4,7 @@ from django.utils.text import slugify
 import uuid
 import os
 
+from account.models import User
 from api.models.other import Category, Tag
 
 def video_upload_path(instance, filename):
@@ -43,3 +44,39 @@ class Video(models.Model):
     
     def __str__(self):
         return self.title
+    
+
+    def get_average_rating(self):
+        # Calculate the average rating of the video
+        ratings = self.ratings.all()
+        if ratings:
+            return sum([rating.rating for rating in ratings]) / len(ratings)
+        return None  # No ratings yet
+
+    def get_likes_count(self):
+        # Return the number of likes for the video
+        return self.likes.count()
+    
+
+
+
+class Rating(models.Model):
+    video = models.ForeignKey(Video, related_name='ratings', on_delete=models.CASCADE)
+    user = models.ForeignKey(User, related_name='ratings', on_delete=models.CASCADE)
+    rating = models.PositiveIntegerField(choices=[(i, i) for i in range(1, 6)]) 
+
+    class Meta:
+        unique_together = ('video', 'user')  
+
+    def __str__(self):
+        return f"{self.user.username} rated {self.video.title} {self.rating}"
+
+class Like(models.Model):
+    video = models.ForeignKey(Video, related_name='likes', on_delete=models.CASCADE)
+    user = models.ForeignKey(User, related_name='likes', on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = ('video', 'user') 
+
+    def __str__(self):
+        return f"{self.user.email} liked {self.video.title}"
