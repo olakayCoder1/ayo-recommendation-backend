@@ -20,7 +20,7 @@ class Command(BaseCommand):
         export_format = kwargs['format']
 
         # Fetch all quiz records from the database
-        quizzes = Quiz.objects.all()
+        quizzes = Quiz.objects.all()[:5]
 
         # Define headers for CSV and Excel
         headers = [
@@ -36,7 +36,6 @@ class Command(BaseCommand):
 
             # Add headers to the Excel sheet
             ws.append(headers)
-
             # Add quiz data to the Excel sheet
             for quiz in quizzes:
                 row = [
@@ -49,10 +48,11 @@ class Command(BaseCommand):
                     ', '.join([tag.name for tag in quiz.tags.all()]),
                     quiz.created_by.first_name if quiz.created_by else '',
                     quiz.created_at,
-                    quiz.updated_at
+                    quiz.updated_at,
                 ]
                 ws.append(row)
 
+            return 
             # Save the Excel file
             filename = 'quizzes_export.xlsx'
             wb.save(filename)
