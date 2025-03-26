@@ -80,7 +80,7 @@ class VideoViewSet(viewsets.ModelViewSet):
         if articles.count() < 3:
             random_articles = articles
         else:
-            random_articles = random.sample(list(articles), 3)  
+            random_articles = random.sample(list(articles), 5)  
 
         serializer = self.get_serializer(random_articles, many=True)
         return success_response(serializer.data)
