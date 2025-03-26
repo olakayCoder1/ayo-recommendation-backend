@@ -112,7 +112,7 @@ class Article(models.Model):
     top_image = models.URLField(max_length=2000, blank=True, null=True)
     meta_description = models.TextField(blank=True)
     summary = models.TextField(blank=True)
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(auto_now_add=True, null=True,blank=True)
 
     def __str__(self):
         return self.title
@@ -132,5 +132,17 @@ class ArticleLike(models.Model):
     def __str__(self):
         return f"{self.user.email} liked {self.video.title}"
 
+
+class ArticleBookmark(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    article = models.ForeignKey(Article, related_name='bookmarks', on_delete=models.CASCADE)
+    user = models.ForeignKey(User, related_name='bookmarks', on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('article', 'user')
+
+    def __str__(self):
+        return f"{self.user.email} bookmarked {self.article.title}"
 
     

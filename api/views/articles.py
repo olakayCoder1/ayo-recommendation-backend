@@ -5,7 +5,7 @@ from rest_framework.decorators import action
 from rest_framework import viewsets
 from rest_framework.parsers import MultiPartParser, FormParser,JSONParser
 from api.serializers.articles import ArticleSerializer
-from account.models import Article, ArticleLike
+from account.models import Article, ArticleLike,ArticleBookmark
 from helper.utils.response.response_format import success_response, paginate_success_response, bad_request_response
 
 
@@ -131,3 +131,52 @@ class ArticleViewSet(viewsets.ModelViewSet):
 
         serializer = self.get_serializer(random_articles, many=True)
         return success_response(serializer.data)
+    
+
+
+    @action(detail=True, methods=['post'])
+    def bookmark(self, request, pk=None):
+        article = self.get_object()
+        user = request.user
+
+        # Check if the user already bookmarked the article
+        if ArticleBookmark.objects.filter(article=article, user=user).exists():
+            return bad_request_response(
+                message='You have already bookmarked this article.'
+            )
+
+        # Create the bookmark
+        ArticleBookmark.objects.create(article=article, user=user)
+
+        return success_response(
+            message='Article bookmarked successfully'
+        )
+
+    @action(detail=True, methods=['delete'])
+    def unbookmark(self, request, pk=None):
+        article = self.get_object()
+        user = request.user
+
+        # Try to find and delete the bookmark
+        try:
+            bookmark = ArticleBookmark.objects.get(article=article, user=user)
+            bookmark.delete()
+            return success_response(
+                message='Article bookmark removed successfully'
+            )
+        except ArticleBookmark.DoesNotExist:
+            return bad_request_response(
+                message='You have not bookmarked this article.'
+            )
+
+    @action(detail=False, methods=['get'])
+    def bookmarked(self, request):
+        user = request.user
+        bookmarked_articles = Article.objects.filter(bookmarks__user=user)
+        
+        serializer = self.get_serializer(bookmarked_articles, many=True, context={'request': request})
+        return paginate_success_response(
+            request,
+            serializer.data,
+            page_size=int(request.GET.get("page_size",2000))
+        )
