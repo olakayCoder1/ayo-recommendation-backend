@@ -22,6 +22,7 @@ class UserRegisterSerializer(serializers.Serializer):
 
 class UserSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
+    role = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = User
@@ -39,7 +40,15 @@ class UserSerializer(serializers.ModelSerializer):
             'preferred_content',
             'previous_year_performance',
             'current_year_level',
+            'role'
         ]
+
+    def get_role(self,obj:User):
+
+        if obj.is_admin:
+            return 'admin'
+        
+        return 'user'
 
     def create(self, validated_data):
         password = validated_data.pop('password', None)
