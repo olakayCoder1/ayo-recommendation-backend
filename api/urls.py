@@ -2,7 +2,7 @@ from rest_framework_simplejwt.views import TokenRefreshView
 from django.urls import include, path
 from rest_framework.routers import DefaultRouter
 from account.views.auth import AccountVerifyCodeView, LoginTokenObtainPairView, RegisterUserView
-from api.views.articles import ArticleListView,ArticleDetailView, ArticleViewSet
+from api.views.articles import AllOverviewView, ArticleListView,ArticleDetailView, ArticleViewSet, LastFourMonthsOverviewView
 from api.views.quiz import QuizViewSet
 from api.views.students import StudentViewSet
 from api.views.videos import ChannelViewSet, TagViewSet, VideoViewSet
@@ -29,6 +29,7 @@ urlpatterns = [
     path('article/<uuid:id>', ArticleDetailView.as_view(), name='token_refresh'),
     path('article/<uuid:id>/', ArticleDetailView.as_view(), name='token_refresh'),
     path('article/<uuid:id>/', ArticleDetailView.as_view(), name='token_refresh'),
-
+    path('overview', AllOverviewView.as_view(), name='AllOverviewView'),
+    path('overview/last_4_months_overview', LastFourMonthsOverviewView.as_view(), name='LastFourMonthsOverviewView'),
     path('admin/', include(router.urls)),
 ]

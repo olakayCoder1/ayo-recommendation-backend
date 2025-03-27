@@ -72,6 +72,8 @@ class Rating(models.Model):
     def __str__(self):
         return f"{self.user.username} rated {self.video.title} {self.rating}"
 
+
+
 class Like(models.Model):
     video = models.ForeignKey(Video, related_name='likes', on_delete=models.CASCADE)
     user = models.ForeignKey(User, related_name='likes', on_delete=models.CASCADE)
