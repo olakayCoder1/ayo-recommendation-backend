@@ -1,15 +1,17 @@
 # views.py
 import random
 from django.http import Http404
-from rest_framework import viewsets, status
-from rest_framework.response import Response
+from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.parsers import MultiPartParser, FormParser,JSONParser
 from django.db.models import Q
 
+from account.models import Article
 from api.models.other import Category, Tag
+from api.models.quiz import Quiz
 from api.models.videos import Like, Rating, Video
 from api.serializers.videos import CategorySerializer, TagSerializer, VideoSerializer
+from helper.prediction_model import get_hybrid_recommendations
 from helper.utils.response.response_format import success_response, paginate_success_response, bad_request_response
 
 class VideoViewSet(viewsets.ModelViewSet):
@@ -131,7 +133,67 @@ class VideoViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=['get'])
     def related(self, request, pk=None):
         video = self.get_object()
+
+        articles = [
+            dict(
+               title=article.title,
+               author=article.authors or '',
+               published_date=article.created_at,
+               content=article.summary or '',
+               tags= article.keywords.split(',') if article.keywords else [] ,
+               references = []
+            ) for article in Article.objects.all()
+        ]
+        quizzes = [
+            [
+                str(quiz.id), 
+                quiz.title, 
+                quiz.description, 
+                quiz.category.name or '', 
+                quiz.level,
+                quiz.estimated_time,
+                ''.join([ tag.name for tag in  quiz.tags.all()]), 
+                '',
+                quiz.created_at,
+                quiz.updated_at
+            ] for quiz in Quiz.objects.all()
+        ]
+
+        videos = [
+            [
+                str(video.id), 
+                video.title, 
+                video.slug, 
+                video.description, 
+                video.category.name or '', 
+                ''.join([ tag.name for tag in  video.tags.all()]), 
+                '',
+                '',
+                video.views,
+                video.created_at,
+                video.updated_at,
+                None,
+                0
+            ] for video in Video.objects.all()
+        ]
+        recommendations = get_hybrid_recommendations(articles, quizzes, videos, video.title, top_n=5)
+
+        # print(recommendations)
+        videos_recommendation = []
+        quizzes_recommendation = []
+        articles_recommendation = []
+        for key , value in recommendations.items():
+            if value == 'video':videos_recommendation.append(key)
+            if value == 'article':articles_recommendation.append(key)
+            if value == 'quiz':quizzes_recommendation.append(key)
         
+
+        video_recommendations_lists = Video.objects.filter(title__in=videos_recommendation)
+        quizzes_recommendations_lists = Quiz.objects.filter(title__in=quizzes_recommendation)
+        articles_recommendations_lists = Article.objects.filter(title__in=articles_recommendation)
+        print(video_recommendations_lists)
+        print(quizzes_recommendations_lists)
+        print(articles_recommendations_lists)
         limit = request.query_params.get('limit', 6)
         
         try:
