@@ -10,6 +10,8 @@ from account.models import Article
 from api.models.other import Category, Tag
 from api.models.quiz import Quiz
 from api.models.videos import Like, Rating, Video
+from api.serializers.articles import ArticleSerializer
+from api.serializers.quiz import QuizSerializer
 from api.serializers.videos import CategorySerializer, TagSerializer, VideoSerializer
 from helper.prediction_model import get_hybrid_recommendations
 from helper.utils.response.response_format import success_response, paginate_success_response, bad_request_response
@@ -185,15 +187,12 @@ class VideoViewSet(viewsets.ModelViewSet):
         for key , value in recommendations.items():
             if value == 'video':videos_recommendation.append(key)
             if value == 'article':articles_recommendation.append(key)
-            if value == 'quiz':quizzes_recommendation.append(key)
+            if value == 'quiz':quizzes_recommendation.append(key) 
         
 
-        video_recommendations_lists = Video.objects.filter(title__in=videos_recommendation)
-        quizzes_recommendations_lists = Quiz.objects.filter(title__in=quizzes_recommendation)
-        articles_recommendations_lists = Article.objects.filter(title__in=articles_recommendation)
-        print(video_recommendations_lists)
-        print(quizzes_recommendations_lists)
-        print(articles_recommendations_lists)
+        video_recommendations_lists = self.serializer_class(Video.objects.filter(title__in=videos_recommendation).exclude(id=video.id),many=True,context={'request': request}).data
+        quizzes_recommendations_lists = QuizSerializer(Quiz.objects.filter(title__in=quizzes_recommendation),many=True).data
+        articles_recommendations_lists = ArticleSerializer(Article.objects.filter(title__in=articles_recommendation),many=True).data
         limit = request.query_params.get('limit', 6)
         
         try:
@@ -206,7 +205,14 @@ class VideoViewSet(viewsets.ModelViewSet):
         # Serialize the related videos
         serializer = self.get_serializer(related_videos, many=True, context={'request': request})
         
-        return success_response(data=serializer.data)
+        response = {
+            'videos': serializer.data,
+            'related_articles': articles_recommendations_lists[:limit],
+            'related_quizzes': quizzes_recommendations_lists[:limit],
+            'related_videos': video_recommendations_lists[:limit],
+
+        }
+        return success_response(data=response)
 
 
 class ChannelViewSet(viewsets.ModelViewSet):
