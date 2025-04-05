@@ -65,6 +65,8 @@ class Rating(models.Model):
     video = models.ForeignKey(Video, related_name='ratings', on_delete=models.CASCADE)
     user = models.ForeignKey(User, related_name='ratings', on_delete=models.CASCADE)
     rating = models.PositiveIntegerField(choices=[(i, i) for i in range(1, 6)]) 
+    active = models.BooleanField(default=True)
+
 
     class Meta:
         unique_together = ('video', 'user')  

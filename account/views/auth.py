@@ -137,8 +137,8 @@ class RegisterUserView(generics.GenericAPIView):
         confirmPassword = serializer.validated_data['confirmPassword']
         phone_number = serializer.validated_data['password']
         preferred_content = serializer.validated_data['preferred_content']
-        study_preference = serializer.validated_data['study_preference']
-        previous_year_performance = serializer.validated_data['previous_year_performance']
+        # study_preference = serializer.validated_data['study_preference']
+        # previous_year_performance = serializer.validated_data['previous_year_performance']
         current_year_level = serializer.validated_data['current_year_level']
 
         # validate that password and confirm password are the same
@@ -162,8 +162,8 @@ class RegisterUserView(generics.GenericAPIView):
             is_active=True,
             phone_number=phone_number,
             preferred_content=preferred_content,
-            study_preference=study_preference,
-            previous_year_performance=previous_year_performance,
+            # study_preference=study_preference,
+            # previous_year_performance=previous_year_performance,
             current_year_level=current_year_level,
         )
         user.set_password(password)

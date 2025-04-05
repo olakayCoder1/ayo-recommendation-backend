@@ -16,8 +16,8 @@ class UserRegisterSerializer(serializers.Serializer):
     last_name = serializers.CharField(required=True)
     phone_number = serializers.CharField(required=True)
     preferred_content = serializers.CharField(required=True)
-    study_preference = serializers.CharField(required=True)
-    previous_year_performance = serializers.CharField(required=True)
+    study_preference = serializers.CharField(required=False)
+    previous_year_performance = serializers.CharField(required=False)
     current_year_level = serializers.CharField(required=True)
 
 class UserSerializer(serializers.ModelSerializer):
