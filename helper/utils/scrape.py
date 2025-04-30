@@ -137,17 +137,17 @@ class GoogleDataHandler:
             print("****"*20)
             print(article.title)
             # Save the scraped data to the database using sync_to_async
-            # article_obj = await sync_to_async(ArticleModel.objects.create)(
-            #     title=article_data['title'],
-            #     authors=article_data['authors'],
-            #     publish_date=article_data['publish_date'],
-            #     source_url=article_data['source_url'],
-            #     text=article_data['text'],
-            #     keywords=article_data['keywords'],
-            #     top_image=article_data['top_image'],
-            #     meta_description=article_data['meta_description'],
-            #     summary=article_data['summary']
-            # )
+            article_obj = await sync_to_async(ArticleModel.objects.create)(
+                title=article_data['title'],
+                authors=article_data['authors'],
+                publish_date=article_data['publish_date'],
+                source_url=article_data['source_url'],
+                text=article_data['text'],
+                keywords=article_data['keywords'],
+                top_image=article_data['top_image'],
+                meta_description=article_data['meta_description'],
+                summary=article_data['summary']
+            )
 
             return True
             # return article_obj
@@ -161,7 +161,7 @@ class GoogleDataHandler:
 # links = asyncio.run(ArticleManager().search())
 # print(links)
 # # Running the asynchronous function
-# for link in links[2:3]:
+# for link in links:
 #     data = asyncio.run(GoogleDataHandler.scrape_article(link)) 
 
     

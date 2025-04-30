@@ -101,22 +101,53 @@ class User(AbstractBaseUser, PermissionsMixin):
 
 
 
+# class Article(models.Model):
+#     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+#     title = models.CharField(max_length=255)
+#     authors = models.TextField(blank=True)  # Store authors as a text field, comma-separated
+#     publish_date = models.TextField(null=True, blank=True)
+#     source_url = models.URLField(max_length=2000)
+#     text = models.TextField()
+#     keywords = models.TextField(blank=True)  # Store keywords as a comma-separated string
+#     top_image = models.URLField(max_length=2000, blank=True, null=True)
+#     meta_description = models.TextField(blank=True)
+#     summary = models.TextField(blank=True)
+#     created_at = models.DateTimeField(auto_now_add=True, null=True,blank=True)
+
+#     def __str__(self):
+#         return self.title
+
+
+#     def get_likes_count(self):
+#         return self.articles.count()
+
+
 class Article(models.Model):
+    CONTENT_TYPE_CHOICES = [
+        ('written', 'Written Content'),
+        ('pdf', 'PDF Document'),
+        ('external', 'External Link'),
+    ]
+    
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     title = models.CharField(max_length=255)
-    authors = models.TextField(blank=True)  # Store authors as a text field, comma-separated
+    authors = models.TextField(blank=True)
     publish_date = models.TextField(null=True, blank=True)
-    source_url = models.URLField(max_length=2000)
-    text = models.TextField()
-    keywords = models.TextField(blank=True)  # Store keywords as a comma-separated string
+    source_url = models.URLField(max_length=2000, blank=True, null=True)
+    text = models.TextField(blank=True)
+    keywords = models.TextField(blank=True)
     top_image = models.URLField(max_length=2000, blank=True, null=True)
     meta_description = models.TextField(blank=True)
     summary = models.TextField(blank=True)
-    created_at = models.DateTimeField(auto_now_add=True, null=True,blank=True)
-
+    created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+    
+    # New fields for content type handling
+    content_type = models.CharField(max_length=10, choices=CONTENT_TYPE_CHOICES, default='written')
+    pdf_file = models.FileField(upload_to='articles/pdfs/', blank=True, null=True)
+    external_link = models.URLField(max_length=2000, blank=True, null=True)
+    
     def __str__(self):
         return self.title
-
 
     def get_likes_count(self):
         return self.articles.count()

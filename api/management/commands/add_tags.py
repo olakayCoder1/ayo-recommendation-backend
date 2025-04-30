@@ -1,5 +1,6 @@
 from django.core.management.base import BaseCommand
 
+from account.models import Article
 from api.models.other import Category, Tag
 
 # Branch
@@ -7,6 +8,7 @@ class Command(BaseCommand):
     help = 'Migrate data from the old database to the new database'
 
     def handle(self, *args, **kwargs):
+
         # Use the old database connection
         tags_list = [
             "React",

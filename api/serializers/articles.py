@@ -16,7 +16,7 @@ class ArticleSerializer(serializers.ModelSerializer):
             'id','title','authors',"publish_date",
             'source_url','text','keywords','top_image',
             "meta_description","summary",'created_at','likes_count',
-            "has_liked",
+            "has_liked",'content_type','external_link','pdf_file',
             'bookmarks_count', 'has_bookmarked'
         ]
 

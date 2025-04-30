@@ -47,6 +47,64 @@ class ArticleDetailView(generics.RetrieveAPIView):
 
     
 
+class ArticleCreate(generics.GenericAPIView):
+
+    serializer_class = ArticleSerializer
+
+
+    def post(self, request, *args, **kwargs):
+        """Create a new article with support for written content, PDF uploads, or external links."""
+        print(request.data) 
+        serializer = self.get_serializer(data=request.data)
+
+        
+        # Handle file uploads for top_image and pdf_file if present
+        top_image = 'https://upload.wikimedia.org/wikipedia/commons/b/b6/Gutenberg_Bible%2C_Lenox_Copy%2C_New_York_Public_Library%2C_2009._Pic_01.jpg'
+        pdf_file = request.FILES.get('pdf_file', None)
+        
+        if serializer.is_valid():
+            # Create but don't save the article instance yet
+            article = serializer.save(top_image=top_image, pdf_file=pdf_file)
+            
+            # Parse and add tags if provided
+            if 'tags' in request.data:
+                tags_data = request.data.get('tags')
+                
+                # Handle tags coming as string (comma separated)
+                if isinstance(tags_data, str):
+                    tag_names = [tag.strip() for tag in tags_data.split(',') if tag.strip()]
+                # Handle tags coming as list
+                elif isinstance(tags_data, list):
+                    tag_names = tags_data
+                else:
+                    tag_names = []
+                    
+            #     # Get or create each tag and add to article
+            #     for tag_name in tag_names:
+            #         tag, created = Tag.objects.get_or_create(name=tag_name)
+            #         article.tags.add(tag)
+            
+            # # Handle channel assignment if provided
+            # channel_name = request.data.get('channel', None)
+            # if channel_name:
+            #     try:
+            #         channel = Channel.objects.get(name=channel_name)
+            #         article.channel = channel
+            #         article.save()
+            #     except Channel.DoesNotExist:
+            #         # Optionally create the channel if it doesn't exist
+            #         pass
+            
+            return success_response(
+                message="Article created successfully",
+                data=serializer.data
+            )
+        
+        return bad_request_response(
+            message="Failed to create article",
+            errors=serializer.errors
+        )
+
 
 
 class ArticleViewSet(viewsets.ModelViewSet):
@@ -119,7 +177,6 @@ class ArticleViewSet(viewsets.ModelViewSet):
         return success_response(
             message='Article liked successfully'
         )
-
 
 
     @action(detail=False, methods=['get'], url_path='recommendation')
