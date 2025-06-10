@@ -98,7 +98,7 @@ CORS_ALLOW_HEADERS = [
 # }
 
 DATABASES = {
-    'default': dj_database_url.config(default=os.getenv('DATABASE_URL'))
+    'default': dj_database_url.config(default='postgres://neondb_owner:npg_SWICbvU75Muf@ep-bold-mode-a5e9ny94-pooler.us-east-2.aws.neon.tech/neondb?sslmode=require')
 }
 
 # Password validation
