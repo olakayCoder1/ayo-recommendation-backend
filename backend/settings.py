@@ -97,10 +97,17 @@ CORS_ALLOW_HEADERS = [
 #     }
 # }
 
-DATABASES = {
-    'default': dj_database_url.config(default='postgres://neondb_owner:npg_SWICbvU75Muf@ep-bold-mode-a5e9ny94-pooler.us-east-2.aws.neon.tech/neondb?sslmode=require')
-}
+# DATABASES = {
+#     'default': dj_database_url.config(default='postgres://neondb_owner:npg_SWICbvU75Muf@ep-bold-mode-a5e9ny94-pooler.us-east-2.aws.neon.tech/neondb?sslmode=require')
+# }
 
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
+}
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
 
